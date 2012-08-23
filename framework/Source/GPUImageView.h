@@ -1,6 +1,15 @@
 #import <UIKit/UIKit.h>
 #import "GPUImageOpenGLESContext.h"
 
+@class GPUImageView;
+
+@protocol GPUImageViewDelegate <NSObject>
+
+-(void) viewDidStartTransition:(GPUImageView*) view;
+-(void) viewDidFinishTransition:(GPUImageView*) view;
+
+@end
+
 typedef enum {
     kGPUImageFillModeStretch,                       // Stretch to fill the full view, which may distort the image outside of its normal aspect ratio
     kGPUImageFillModePreserveAspectRatio,           // Maintains the aspect ratio of the source image, adding bars of the specified background color
@@ -13,6 +22,10 @@ typedef enum {
 @interface GPUImageView : UIView <GPUImageInput>
 {
     GPUImageRotationMode inputRotation;
+    NSTimeInterval _transitionDuration;
+    CFTimeInterval _transitionStart;
+    BOOL _useTransition;
+    BOOL _transitionInProgress;
 }
 
 /** The fill mode dictates how images are fit in the view, with the default being kGPUImageFillModePreserveAspectRatio
@@ -32,4 +45,8 @@ typedef enum {
  */
 - (void)setBackgroundColorRed:(GLfloat)redComponent green:(GLfloat)greenComponent blue:(GLfloat)blueComponent alpha:(GLfloat)alphaComponent;
 
+@property (nonatomic, assign) BOOL transitionEnabled;
+@property (nonatomic, assign) NSTimeInterval transitionDuration;
+
+@property (nonatomic, assign) id<GPUImageViewDelegate> delegate;
 @end

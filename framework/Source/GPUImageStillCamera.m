@@ -108,6 +108,7 @@ void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize fina
             [self captureOutput:photoOutput didOutputSampleBuffer:imageSampleBuffer fromConnection:[[photoOutput connections] objectAtIndex:0]];
         }        
 
+        [self pauseCameraCapture];
         UIImage *filteredPhoto = [finalFilterInChain imageFromCurrentlyProcessedOutput];
         
         block(filteredPhoto, error);        
