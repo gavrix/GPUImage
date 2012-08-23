@@ -11,6 +11,9 @@
 @interface GPUImageView () 
 {
     GLuint inputTextureForDisplay;
+    GLuint prevtexture;
+    
+    
     GLuint displayRenderbuffer, displayFramebuffer;
     
     GLProgram *displayProgram;
@@ -38,6 +41,9 @@
 
 @synthesize sizeInPixels = _sizeInPixels;
 @synthesize fillMode = _fillMode;
+@synthesize transitionEnabled = _useTransition;
+@synthesize transitionDuration = _transitionDuration;
+@synthesize delegate = _delegate;
 @synthesize enabled;
 
 #pragma mark -
@@ -88,6 +94,12 @@
     eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
 
     self.enabled = YES;
+    [GPUImageOpenGLESContext useImageProcessingContext];
+    displayProgram = [[GLProgram alloc] initWithVertexShaderString:kGPUImageVertexShaderString 
+                                              fragmentShaderString:kGPUImagePassthroughFragmentShaderString];
+
+    [displayProgram addAttribute:@"position"];
+	[displayProgram addAttribute:@"inputTextureCoordinate"];
     
     runSynchronouslyOnVideoProcessingQueue(^{
         [GPUImageOpenGLESContext useImageProcessingContext];
@@ -355,24 +367,101 @@
 
 - (void)newFrameReadyAtTime:(CMTime)frameTime atIndex:(NSInteger)textureIndex;
 {
-    runSynchronouslyOnVideoProcessingQueue(^{
-        [GPUImageOpenGLESContext setActiveShaderProgram:displayProgram];
-        [self setDisplayFramebuffer];
+    if(_useTransition && !_transitionInProgress)
+    {
+        if(self.delegate && [self.delegate respondsToSelector:@selector(viewDidStartTransition:)])
+            [self.delegate viewDidStartTransition:self];
         
-        glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        CADisplayLink* link = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayTransition:)];
+        [link addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+        _transitionInProgress = YES;
+    }
+    else
+    {
+        runSynchronouslyOnVideoProcessingQueue(^{
+            [GPUImageOpenGLESContext setActiveShaderProgram:displayProgram];
+            [self setDisplayFramebuffer];
+            
+            glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            
+            glActiveTexture(GL_TEXTURE4);
+            glBindTexture(GL_TEXTURE_2D, inputTextureForDisplay);
+            glUniform1i(displayInputTextureUniform, 4);
+            
+            glVertexAttribPointer(displayPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices);
+            glVertexAttribPointer(displayTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageView textureCoordinatesForRotation:inputRotation]);
+            
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            
+            [self presentFramebuffer];
+        });
+    }
+}
+
+-(void) displayTransition:(CADisplayLink*)sender
+{
+    if(_transitionStart == 0)
+        _transitionStart = sender.timestamp;
+    
+    
+    [GPUImageOpenGLESContext useImageProcessingContext];
+    [self setDisplayFramebuffer];
+    
+    [displayProgram use];
+    
+    
+    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    
+    // Set fadingcolor
+    
+    glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, prevtexture);
+	glUniform1i(displayInputTextureUniform, 4);
+    
+    glVertexAttribPointer(displayPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices);
+	glVertexAttribPointer(displayTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageView textureCoordinatesForRotation:inputRotation]);
+    
+    
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+    
+    glEnable(GL_BLEND);
+    
+    glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+    glBlendEquation(GL_FUNC_ADD);
+    glDepthMask(GL_FALSE);
+    glBlendColor(0, 0, 0, (sender.timestamp - _transitionStart)/_transitionDuration);
+    
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, inputTextureForDisplay);
+	glUniform1i(displayInputTextureUniform, 4);
+    
+    glVertexAttribPointer(displayPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices);
+	glVertexAttribPointer(displayTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0,
+                          [GPUImageView textureCoordinatesForRotation:inputRotation]);
+    
+    
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+    glDisable(GL_BLEND);
+    [self presentFramebuffer];
+    
+    
+    if(sender.timestamp-_transitionStart > _transitionDuration)
+    {
+        [sender invalidate];
+        _transitionStart = 0;
+        _transitionInProgress = NO;
         
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, inputTextureForDisplay);
-        glUniform1i(displayInputTextureUniform, 4);
-        
-        glVertexAttribPointer(displayPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices);
-        glVertexAttribPointer(displayTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageView textureCoordinatesForRotation:inputRotation]);
-        
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        
-        [self presentFramebuffer];
-    });
+        if(self.delegate && [self.delegate respondsToSelector:@selector(viewDidFinishTransition:)])
+            [self.delegate viewDidFinishTransition:self];
+
+        return;
+    }
+
 }
 
 - (NSInteger)nextAvailableTextureIndex;
