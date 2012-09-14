@@ -170,4 +170,21 @@
     }
 }
 
+
+-(NSDictionary*) parametersRepresentation
+{
+    NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+    for(GPUImageFilterParameterDescription* description in parametersDescriptions)
+    {
+        id value = [self valueForKey:description.name];
+        [dict setObject:value forKey:description.name];
+    }
+    return dict;
+}
+
+-(void) setParametersValuesFrom:(NSDictionary*) representation
+{
+    [self setValuesForKeysWithDictionary:representation];
+}
+
 @end

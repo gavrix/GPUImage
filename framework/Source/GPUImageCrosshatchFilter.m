@@ -73,6 +73,18 @@ NSString *const kGPUImageCrosshatchFragmentShaderString = SHADER_STRING
     self.crossHatchSpacing = 0.03;
     self.lineWidth = 0.003;
     
+    parametersDescriptions = [NSArray arrayWithObjects:
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"lineWidth"
+                                                                               withMinValue:0
+                                                                               withMaxValue:1
+                                                                           withDefaultValue:.003],
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"crossHatchSpacing"
+                                                                               withMinValue:0
+                                                                               withMaxValue:1
+                                                                           withDefaultValue:0.03],
+                              nil];
+
+    
     return self;
 }
 

@@ -32,6 +32,12 @@ NSString *const kGPUImageGammaFragmentShaderString = SHADER_STRING
     gammaUniform = [filterProgram uniformIndex:@"gamma"];
     self.gamma = 1.0;
     
+    parametersDescriptions = [NSArray arrayWithObject:
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"gamma"
+                                                                               withMinValue:0
+                                                                               withMaxValue:3
+                                                                           withDefaultValue:1]];
+
     return self;
 }
 

@@ -32,6 +32,38 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
 void dataProviderReleaseCallback (void *info, const void *data, size_t size);
 void dataProviderUnlockCallback (void *info, const void *data, size_t size);
 
+@implementation GPUImageFilterParameterDescription
+
+-(id)initWithName:(NSString *)name
+{
+    self = [super init];
+    if(self)
+    {
+        _name = name;
+    }
+    return self;
+}
+
+@end
+
+@implementation GPUImageFilterFloatParameterDescription
+
+-(id)initWithName:(NSString *)name withMinValue:(CGFloat)minValue
+     withMaxValue:(CGFloat)maxValue
+ withDefaultValue:(CGFloat)defaultValue
+{
+    self = [super initWithName:name];
+    if(self)
+    {
+        _minValue = minValue;
+        _maxValue = maxValue;
+        _defaultValue = defaultValue;
+    }
+    return self;
+}
+
+@end
+
 @implementation GPUImageFilter
 
 @synthesize renderTarget;
@@ -239,7 +271,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
         CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge void *)[[GPUImageOpenGLESContext sharedImageProcessingOpenGLESContext] context], NULL, &filterTextureCache);
         if (err) 
         {
-            NSAssert(NO, @"Error at CVOpenGLESTextureCacheCreate %d");
+            NSAssert(NO, @"Error at CVOpenGLESTextureCacheCreate");
         }
         
         // Code originally sourced from http://allmybrain.com/2011/12/08/rendering-to-a-texture-with-ios-5-texture-cache-api/
@@ -254,7 +286,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
         if (err) 
         {
             NSLog(@"FBO size: %f, %f", currentFBOSize.width, currentFBOSize.height);
-            NSAssert(NO, @"Error at CVPixelBufferCreate %d");
+            NSAssert(NO, @"Error at CVPixelBufferCreate");
         }
         
         err = CVOpenGLESTextureCacheCreateTextureFromImage (kCFAllocatorDefault,
@@ -270,7 +302,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
                                                       &renderTexture);
         if (err) 
         {
-            NSAssert(NO, @"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d");
+            NSAssert(NO, @"Error at CVOpenGLESTextureCacheCreateTextureFromImage");
         }
 
         CFRelease(attrs);
@@ -739,5 +771,21 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
 
 #pragma mark -
 #pragma mark Accessors
+
+-(NSDictionary*) parametersRepresentation
+{
+    NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+    for(GPUImageFilterParameterDescription* description in parametersDescriptions)
+    {
+        id value = [self valueForKey:description.name];
+        [dict setObject:value forKey:description.name];
+    }
+    return dict;
+}
+
+-(void) setParametersValuesFrom:(NSDictionary*) representation
+{
+    [self setValuesForKeysWithDictionary:representation];
+}
 
 @end

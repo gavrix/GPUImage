@@ -64,6 +64,13 @@ NSString *const kGPUImageAdaptiveThresholdFragmentShaderString = SHADER_STRING
     self.initialFilters = [NSArray arrayWithObject:luminanceFilter];
     self.terminalFilter = adaptiveThresholdFilter;
     
+//    parametersDescriptions = [NSArray arrayWithObject:
+//                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"blurSize"
+//                                                                               withMinValue:0
+//                                                                               withMaxValue:1
+//                                                                           withDefaultValue:.5]];
+
+    
     return self;
 }
 

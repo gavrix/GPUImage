@@ -56,6 +56,18 @@ NSString *const kGPUImageUnsharpMaskFragmentShaderString = SHADER_STRING
     self.intensity = 1.0;
     self.blurSize = 1.0;
     
+    parametersDescriptions = [NSArray arrayWithObjects:
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"blurSize"
+                                                                               withMinValue:0
+                                                                               withMaxValue:10
+                                                                           withDefaultValue:1],
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"intensity"
+                                                                               withMinValue:0
+                                                                               withMaxValue:10
+                                                                           withDefaultValue:1],
+                              nil];
+
+    
     return self;
 }
 

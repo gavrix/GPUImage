@@ -81,6 +81,9 @@ void report_memory(NSString *tag)
 {
     NSInteger nextAvailableTextureIndex = [newTarget nextAvailableTextureIndex];
     [self addTarget:newTarget atTextureLocation:nextAvailableTextureIndex];
+    if([newTarget isKindOfClass:[GPUImageOutput class]])
+        [(GPUImageOutput*)newTarget setSource:self]; //weak
+    
     if ([newTarget shouldIgnoreUpdatesToThisTarget])
     {
         _targetToIgnoreForUpdates = newTarget;
@@ -122,6 +125,14 @@ void report_memory(NSString *tag)
     [targetTextureIndices removeObjectAtIndex:indexOfObject];
     [targets removeObject:targetToRemove];
 }
+
+-(id<GPUImageInput>) firstTarget
+{
+    if([targets count])
+        return [targets objectAtIndex:0];
+    return nil;
+}
+
 
 - (void)removeAllTargets;
 {

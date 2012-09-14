@@ -50,6 +50,19 @@ NSString *const kGPUImageHazeFragmentShaderString = SHADER_STRING
 	
     self.distance = 0.2;
     self.slope = 0.0;
+    
+    parametersDescriptions = [NSArray arrayWithObjects:
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"distance"
+                                                                               withMinValue:.3
+                                                                               withMaxValue:.3
+                                                                           withDefaultValue:0],
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"slope"
+                                                                               withMinValue:-.3
+                                                                               withMaxValue:.3
+                                                                           withDefaultValue:0],
+                              nil];
+    
+    
     return self;
 }
 

@@ -29,7 +29,7 @@ typedef enum { kGPUImageNoRotation, kGPUImageRotateLeft, kGPUImageRotateRight, k
 
 @end
 
-@protocol GPUImageInput
+@protocol GPUImageInput <NSObject>
 - (void)newFrameReadyAtTime:(CMTime)frameTime;
 - (void)setInputTexture:(GLuint)newInputTexture atIndex:(NSInteger)textureIndex;
 - (NSInteger)nextAvailableTextureIndex;
@@ -38,4 +38,5 @@ typedef enum { kGPUImageNoRotation, kGPUImageRotateLeft, kGPUImageRotateRight, k
 - (CGSize)maximumOutputSize;
 - (void)endProcessing;
 - (BOOL)shouldIgnoreUpdatesToThisTarget;
+
 @end

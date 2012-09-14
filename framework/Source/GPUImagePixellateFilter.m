@@ -35,6 +35,14 @@ NSString *const kGPUImagePixellationFragmentShaderString = SHADER_STRING
 
     self.fractionalWidthOfAPixel = 0.05;
     
+    parametersDescriptions = [NSArray arrayWithObjects:
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"fractionalWidthOfAPixel"
+                                                                               withMinValue:0
+                                                                               withMaxValue:1
+                                                                           withDefaultValue:0.05],
+                              nil];
+
+    
     return self;
 }
 

@@ -32,6 +32,12 @@ NSString *const kGPUImageContrastFragmentShaderString = SHADER_STRING
     contrastUniform = [filterProgram uniformIndex:@"contrast"];
     self.contrast = 1.0;
     
+    parametersDescriptions = [NSArray arrayWithObject:
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"contrast"
+                                                                               withMinValue:0
+                                                                               withMaxValue:4
+                                                                           withDefaultValue:1]];
+
     return self;
 }
 

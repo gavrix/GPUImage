@@ -38,6 +38,12 @@ NSString *const kGPUImageSaturationFragmentShaderString = SHADER_STRING
     saturationUniform = [filterProgram uniformIndex:@"saturation"];
     self.saturation = 1.0;
 
+    parametersDescriptions = [NSArray arrayWithObject:
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"saturation"
+                                                                               withMinValue:0
+                                                                               withMaxValue:2
+                                                                           withDefaultValue:1]];
+
     return self;
 }
 

@@ -40,6 +40,21 @@ NSString *const kGPUImageRGBFragmentShaderString = SHADER_STRING
     blueUniform = [filterProgram uniformIndex:@"blue"];
     self.blue = 1.0;
     
+    parametersDescriptions = [[NSArray alloc] initWithObjects:
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"red"
+                                                                               withMinValue:0
+                                                                               withMaxValue:1
+                                                                           withDefaultValue:1],
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"green"
+                                                                               withMinValue:0
+                                                                               withMaxValue:1
+                                                                           withDefaultValue:1],
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"blue"
+                                                                               withMinValue:0
+                                                                               withMaxValue:1
+                                                                           withDefaultValue:1],
+
+                              nil];
     return self;
 }
 

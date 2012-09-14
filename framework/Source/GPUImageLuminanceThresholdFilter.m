@@ -36,6 +36,13 @@ NSString *const kGPUImageLuminanceThresholdFragmentShaderString = SHADER_STRING
     thresholdUniform = [filterProgram uniformIndex:@"threshold"];
     self.threshold = 0.5;
     
+    parametersDescriptions = [NSArray arrayWithObject:
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"threshold"
+                                                                               withMinValue:0
+                                                                               withMaxValue:1
+                                                                           withDefaultValue:.5]];
+
+    
     return self;
 }
 

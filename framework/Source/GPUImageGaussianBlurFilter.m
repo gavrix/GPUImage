@@ -84,6 +84,12 @@ NSString *const kGPUImageGaussianBlurFragmentShaderString = SHADER_STRING
 
     self.blurSize = 1.0;
     
+    parametersDescriptions = [NSArray arrayWithObject:
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"blurSize"
+                                                                               withMinValue:0
+                                                                               withMaxValue:10
+                                                                           withDefaultValue:1]];
+
     return self;
 }
 

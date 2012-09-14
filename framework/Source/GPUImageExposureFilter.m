@@ -32,6 +32,12 @@ NSString *const kGPUImageExposureFragmentShaderString = SHADER_STRING
     exposureUniform = [filterProgram uniformIndex:@"exposure"];
     self.exposure = 0.0;
     
+    parametersDescriptions = [NSArray arrayWithObject:
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"exposure"
+                                                                               withMinValue:-10
+                                                                               withMaxValue:10
+                                                                           withDefaultValue:0]];
+
     return self;
 }
 

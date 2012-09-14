@@ -85,6 +85,12 @@ NSString *const kGPUImageFastBlurFragmentShaderString = SHADER_STRING
     secondBlurSizeUniform = [secondFilterProgram uniformIndex:@"blurSize"];
 
     self.blurSize = 1.0;
+    parametersDescriptions = [NSArray arrayWithObject:
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"blurSize"
+                                                                               withMinValue:-10
+                                                                               withMaxValue:10
+                                                                           withDefaultValue:1]];
+
 
     return self;
 }

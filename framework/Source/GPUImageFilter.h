@@ -37,11 +37,49 @@ struct GPUMatrix3x3 {
 };
 typedef struct GPUMatrix3x3 GPUMatrix3x3;
 
+
+@interface GPUImageFilterParameterDescription : NSObject
+-(id) initWithName:(NSString*) name;
+
+@property (readonly) NSString* name;
+@end
+
+@interface GPUImageFilterBoolParameterDescription :GPUImageFilterParameterDescription
+@property (readonly) BOOL defaultValue;
+@end
+
+@interface GPUImageFilterFloatParameterDescription : GPUImageFilterParameterDescription
+-(id) initWithName:(NSString*) name
+      withMinValue:(CGFloat) minValue
+      withMaxValue:(CGFloat) maxValue
+  withDefaultValue:(CGFloat) defaultValue;
+
+@property (readonly) CGFloat minValue;
+@property (readonly) CGFloat maxValue;
+@property (readonly) CGFloat defaultValue;
+@end
+
+
+@interface GPUImageFilterIntegerParameterDescription : GPUImageFilterParameterDescription
+@property (readonly) NSInteger minValue;
+@property (readonly) NSInteger maxValue;
+@property (readonly) NSInteger defaultValue;
+@end
+
+@protocol GPUImageFilterRepresentation <NSObject>
+
+/// Filter Parameters
+-(NSDictionary*) parametersRepresentation;
+-(void) setParametersValuesFrom:(NSDictionary*) representation;
+
+@end
+
+
 /** GPUImage's base filter class
  
  Filters and other subsequent elements in the chain conform to the GPUImageInput protocol, which lets them take in the supplied or processed texture from the previous link in the chain and do something with it. Objects one step further down the chain are considered targets, and processing can be branched by adding multiple targets to a single output or filter.
  */
-@interface GPUImageFilter : GPUImageOutput <GPUImageInput>
+@interface GPUImageFilter : GPUImageOutput <GPUImageInput, GPUImageFilterRepresentation>
 {
     GLuint filterSourceTexture;
 
@@ -60,6 +98,8 @@ typedef struct GPUMatrix3x3 GPUMatrix3x3;
     
     CGSize currentFilterSize;
     GPUImageRotationMode inputRotation;
+    
+    NSArray* parametersDescriptions;
 }
 
 @property(readonly) CVPixelBufferRef renderTarget;
@@ -122,5 +162,6 @@ typedef struct GPUMatrix3x3 GPUMatrix3x3;
 - (void)setFloatVec3:(GLfloat *)newVec3 forUniform:(NSString *)uniformName;
 - (void)setFloatVec4:(GLfloat *)newVec4 forUniform:(NSString *)uniformName;
 - (void)setFloatArray:(GLfloat *)array length:(GLsizei)count forUniform:(NSString*)uniformName;
+
 
 @end

@@ -80,6 +80,12 @@ NSString *const kGPUImageSharpenFragmentShaderString = SHADER_STRING
     sharpnessUniform = [filterProgram uniformIndex:@"sharpness"];
     self.sharpness = 0.0;
     
+    parametersDescriptions = [NSArray arrayWithObject:
+                              [[GPUImageFilterFloatParameterDescription alloc] initWithName:@"sharpness"
+                                                                               withMinValue:-4
+                                                                               withMaxValue:4
+                                                                           withDefaultValue:0]];
+
     imageWidthFactorUniform = [filterProgram uniformIndex:@"imageWidthFactor"];
     imageHeightFactorUniform = [filterProgram uniformIndex:@"imageHeightFactor"];
     

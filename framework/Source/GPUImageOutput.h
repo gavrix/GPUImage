@@ -66,6 +66,8 @@ void report_memory(NSString *tag);
  */
 - (void)removeAllTargets;
 
+-(id<GPUImageInput>) firstTarget;
+
 /// @name Manage the output texture
 
 - (void)initializeOutputTexture;
@@ -94,4 +96,5 @@ void report_memory(NSString *tag);
 
 - (void)prepareForImageCapture;
 
+@property (assign) GPUImageOutput* source;
 @end
