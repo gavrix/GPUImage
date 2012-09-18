@@ -58,6 +58,9 @@
 /// This determines the rotation applied to the output image, based on the source material
 @property(readwrite, nonatomic) UIInterfaceOrientation outputImageOrientation;
 
+/// These properties determine whether or not the two camera orientations should be mirrored. By default, both are NO.
+@property(readwrite, nonatomic) BOOL horizontallyMirrorFrontFacingCamera, horizontallyMirrorRearFacingCamera;
+
 @property(nonatomic, retain) id<GPUImageVideoCameraDelegate> delegate;
 
 /// @name Initialization and teardown
@@ -106,6 +109,10 @@
 /** Get the position (front, rear) of the source camera
  */
 - (AVCaptureDevicePosition)cameraPosition;
+
+/** Get the AVCaptureConnection of the source camera
+ */
+- (AVCaptureConnection *)videoCaptureConnection;
 
 /** This flips between the front and rear cameras
  */

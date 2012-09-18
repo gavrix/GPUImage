@@ -19,7 +19,7 @@
         
         if (!secondFilterProgram.initialized)
         {
-            [self initializeAttributes];
+            [self initializeSecondaryAttributes];
             
             if (![secondFilterProgram link])
             {
@@ -58,9 +58,8 @@
     return self;
 }
 
-- (void)initializeAttributes;
+- (void)initializeSecondaryAttributes;
 {
-    [super initializeAttributes];
     [secondFilterProgram addAttribute:@"position"];
 	[secondFilterProgram addAttribute:@"inputTextureCoordinate"];
 }
@@ -239,7 +238,8 @@
     [self setSecondFilterFBO];
     
     [GPUImageOpenGLESContext setActiveShaderProgram:secondFilterProgram];
-    
+    [self setUniformsForProgramAtIndex:1];
+
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     
